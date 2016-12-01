@@ -1,0 +1,11 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "corsWhitelist": [
+    "*"
+  ],
+  "logger": {
+    "level": "silly",
+    "file": "test.log"
+  }
+}

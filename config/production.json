@@ -1,0 +1,5 @@
+{
+  "host": "users-app.feathersjs.com",
+  "port": 80,
+  "corsWhitelist": []
+}

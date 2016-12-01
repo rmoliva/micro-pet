@@ -1,0 +1,21 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "corsWhitelist": [
+    "*"
+  ],
+  "logger": {
+    "level": "silly",
+    "file": "development.log"
+  },
+  "v1": {
+    "mongodb": "mongodb://localhost:27017/users",
+    "public": "../public/",
+    "auth": {
+      "token": {
+        "secret": "mjQypRhHWjPYdni32GMZXxyiiqSuye+lGSFpU5+8AjpL1+WnN811b1L/hzqE9IrQO9mR/wLbA9n65VFJ/QVshA=="
+      },
+      "local": {}
+    }
+  }
+}
