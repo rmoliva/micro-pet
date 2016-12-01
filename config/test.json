@@ -7,5 +7,15 @@
   "logger": {
     "level": "silly",
     "file": "test.log"
+  },
+  "v1": {
+    "mongodb": "mongodb://localhost:27017/micropet_test",
+    "public": "../public/",
+    "auth": {
+      "token": {
+        "secret": "mjQypRhHWjPYdni32GMZXxyiiqSuye+lGSFpU5+8AjpL1+WnN811b1L/hzqE9IrQO9mR/wLbA9n65VFJ/QVshA=="
+      },
+      "local": {}
+    }
   }
 }

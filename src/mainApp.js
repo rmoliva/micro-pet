@@ -6,12 +6,12 @@ const configuration = require('feathers-configuration');
 const compress = require('compression');
 const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
-const preMiddleware = require('./middleware/pre');
-const postMiddleware = require('./middleware/post');
 
 const cors = require('./cors');
 const logger = require('./logger');
-const appv1fn = require('./v1/app');
+const versions = require('./versions');
+const preMiddleware = require('./middleware/pre');
+const postMiddleware = require('./middleware/post');
 
 // var User = {
 //   email: 'admin@feathersjs.com',
@@ -36,9 +36,7 @@ app.use(compress())
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({extended: true}))
   .configure(preMiddleware)
-  .use('/v1', appv1fn({
-    logger: app.logger,
-  }))
+  .configure(versions)
   .configure(postMiddleware);
 
 module.exports = app;

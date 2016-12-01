@@ -16,10 +16,10 @@
     "node": ">= 0.12.0"
   },
   "scripts": {
-    "test": "npm run eslint && npm run ava",
+    "test": "NODE_ENV=test npm run eslint && npm run ava",
     "eslint": "eslint src/. test/.",
     "start": "node src/",
-    "ava": "ava --verbose",
+    "ava": "NODE_ENV=test ava --verbose",
     "debug": "node --inspect --debug-brk src/index.js"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "compression": "^1.6.2",
     "cors": "^2.8.1",
     "express-winston": "^2.0.0",
+    "eyes": "^0.1.8",
     "feathers": "^2.0.2",
     "feathers-authentication": "^0.7.12",
     "feathers-authentication-local": "^0.3.0",

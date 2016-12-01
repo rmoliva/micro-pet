@@ -9,7 +9,7 @@
     "file": "development.log"
   },
   "v1": {
-    "mongodb": "mongodb://localhost:27017/users",
+    "mongodb": "mongodb://localhost:27017/micropet_dev",
     "public": "../public/",
     "auth": {
       "token": {
