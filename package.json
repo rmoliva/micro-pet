@@ -19,7 +19,8 @@
     "test": "NODE_ENV=test npm run eslint && npm run ava",
     "eslint": "eslint src/. test/.",
     "start": "node src/",
-    "ava": "NODE_ENV=test ava --verbose",
+    "start:debug": "DEBUG=feathers-authentication* node src/",
+    "ava": "NODE_ENV=test ava --verbose --serial",
     "debug": "node --inspect --debug-brk src/index.js"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "passport-google-oauth20": "^1.0.0",
     "passport-google-token": "^0.1.2",
     "ramda": "^0.22.1",
+    "request": "^2.79.0",
     "serve-favicon": "^2.3.2",
     "winston": "^2.3.0",
     "winston-daily-rotate-file": "^1.4.0"
@@ -50,6 +52,7 @@
     "eslint": "^3.11.1",
     "eslint-config-google": "^0.7.1",
     "mocha": "^3.2.0",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "sinon": "^1.17.6"
   }
 }

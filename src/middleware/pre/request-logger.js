@@ -10,7 +10,8 @@ module.exports = function(app) {
       'info',
       `${req.method} "${mainUrl}" for ${req.ip} ${new Date().toISOString()}`
     );
-    app.logger.log('info', `- Parameters: ${JSON.stringify(req.query)}`);
+    app.logger.log('info', `- Query: ${JSON.stringify(req.query)}`);
+    app.logger.log('info', `- Body: ${JSON.stringify(req.body)}`);
     next();
   };
 };

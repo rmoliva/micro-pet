@@ -1,4 +1,5 @@
 const path = require('path');
+const R = require('ramda');
 const winston = require('winston');
 require('winston-daily-rotate-file');
 const fs = require('fs');
@@ -35,10 +36,23 @@ const _fileRotateTransport = function(configuration) {
 };
 
 const _transports = function(configuration) {
-  return [
-    _consoleTransport(configuration),
-    _fileRotateTransport(configuration),
-  ];
+  let environment = process.env.NODE_ENV || 'development';
+  let trs = {
+    development: [
+      _consoleTransport,
+      _fileRotateTransport,
+    ],
+    production: [
+      _consoleTransport,
+      _fileRotateTransport,
+    ],
+    test: [
+      _fileRotateTransport,
+    ],
+  };
+  return R.map(function(fn) {
+    return fn(configuration);
+  }, trs[environment]);
 };
 
 // Asegurarse de que exista la carpeta de log

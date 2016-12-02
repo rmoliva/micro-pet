@@ -13,18 +13,6 @@ const versions = require('./versions');
 const preMiddleware = require('./middleware/pre');
 const postMiddleware = require('./middleware/post');
 
-// var User = {
-//   email: 'admin@feathersjs.com',
-//   password: 'admin',
-//   permissions: ['*']
-// };
-//
-// console.log('Creating user');
-//
-// app.service('users').create(User).then(user => {
-//   console.log('Created default user', user);
-// }).catch(console.error);
-
 const config = configuration();
 
 const app = feathers()

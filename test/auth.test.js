@@ -1,12 +1,15 @@
 'use strict';
 
+// DEBUG=feathers-authentication*
 const test = require('ava');
 const request = require('request');
-const inspect = require('eyes').inspector({
-  maxLength: false,
-});
+const Promise = require('bluebird');
+// const inspect = require('eyes').inspector({
+//   maxLength: false,
+// });
 const mainApp = require('../src/mainApp');
 
+let port = 3001;
 let server = null;
 let User = {
   email: 'admin@feathersjs.com',
@@ -15,56 +18,87 @@ let User = {
 };
 let userId = null;
 
-/* eslint-disable no-invalid-this*/
-test.before('opening server', (t) => {
-  server = mainApp.listen(3030);
-});
+const _url = function(path) {
+  return `http://localhost:${port}${path}`;
+};
 
-test.before.cb('listening server', (t) => {
-  server.once('listening', t.end);
-});
+const _promiseRequest = function(options) {
+  return new Promise(function(resolve, reject) {
+    request(options, function(err, res, body) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({
+          res: res,
+          body: body,
+        });
+      }
+    });
+  });
+};
 
-test.before.cb('insert user', (t) => {
-  let service = mainApp.appv1.service('/users');
-  service.create(User).then(function(data) {
-    userId = data._id;
-    t.end();
-  }).catch(function(err) {
-    t.fail(err.message);
-    t.end();
+test.before.cb((t) => {
+  server = mainApp.listen(port);
+  server.once('listening', function() {
+    let service = mainApp.appv1.service('/users');
+    service.create(User).then(function(data) {
+      userId = data._id;
+      t.end();
+    }).catch(function(err) {
+      t.fail(err.message);
+      t.end();
+    });
   });
 });
 
 test.cb('with valid credentials can auth and get a token', (t) => {
-  request({
-    url: 'http://localhost:3030/v1/auth/local',
+  _promiseRequest({
+    url: _url('/v1/auth/local'),
     method: 'POST',
-    headers: {
-      'Content-Type': 'application-json',
-    },
+    json: true,
     form: {
       email: User.email,
-      password: User.password,
+      password: 'admin',
     },
-  }, function(err, res, body) {
-    // inspect(res);
-    t.is(res.statusCode, 200);
+  }).then(function(data) {
+    // Si hace un redirect a /auth/success es que todo ha ido bien
+    t.is(data.res.statusCode, 201);
 
-    t.not(body.indexOf('<html>'), -1);
-    t.end();
+    // Guardamos el token
+    let token = data.body.token;
+    t.truthy(token);
+
+    // Fail without token
+    Promise.all([
+      _promiseRequest({
+        url: _url('/v1/users'),
+        json: true,
+        method: 'GET',
+      }, function(data) {
+        // No authenticated
+        t.is(data.res.statusCode, 401);
+      }),
+      _promiseRequest({
+        url: _url(`/v1/users?token=${token}`),
+        json: true,
+        method: 'GET',
+      }, function(data) {
+        // Authenticated
+        t.is(data.res.statusCode, 200);
+      }),
+    ]).then(function() {
+      t.end();
+    });
   });
 });
 
-test.after.always.cb('remove user', (t) => {
+test.after.always.cb((t) => {
   let service = mainApp.appv1.service('/users');
-  service.remove(userId, {}).then(
-    t.end
-  ).catch(
+  service.remove(userId, {}).then(function() {
+    t.end();
+  }).catch(
     t.end
   );
-});
-
-test.after.always.cb('closing server', (t) => {
   server.close(t.end);
 });
 /* eslint-enable no-invalid-this*/
