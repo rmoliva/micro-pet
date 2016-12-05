@@ -5,11 +5,10 @@ const test = require('ava');
 const request = require('request');
 const Promise = require('bluebird');
 const sinon = require('sinon');
-const User = require('../src/v1/services/user/user-model');
-
-const inspect = require('eyes').inspector({
-  maxLength: false,
-});
+require('sinon-as-promised')(Promise);
+// const inspect = require('eyes').inspector({
+//   maxLength: false,
+// });
 const mainApp = require('../src/mainApp');
 
 // TODO: Quitar estas variables y meterlas dentro de testeos
@@ -20,7 +19,7 @@ let server = null;
 //   password: 'admin',
 //   permissions: ['*'],
 // };
-let stub = null;
+let stub1 = null;
 // let userId = null;
 
 const _url = function(path) {
@@ -53,36 +52,31 @@ test.before.cb((t) => {
     //   t.fail(err.message);
     //   t.end();
     // });
-    stub = sinon.stub(User, 'find');
+    const service = mainApp.appv1.service('/users');
+
+    stub1 = sinon.stub(service, 'find');
     t.end();
   });
 });
 
 test.cb('with valid credentials can auth and get a token', (t) => {
-  stub.yields(null, [{
+  stub1.resolves([{
     email: 'admin@feathersjs.com',
     password: '$2a$10$KdGb.nswG9Tth76WZjjma.C6.qFNwBs8fGFTTatgrunB.608rk9Xa',
   }]);
 
-  // let service = mainApp.appv1.service('/users');
-  // const query = {
-  //   email: 'admin@feathersjs.com',
-  //   $limit: 1,
-  // };
-  // service.find({query}).then(function(data) {
-  //   inspect(data);
-  // });
+  t.plan(3);
 
   _promiseRequest({
     url: _url('/v1/auth/local'),
     method: 'POST',
     json: true,
     form: {
-      email: User.email,
+      email: 'admin@feathersjs.com',
       password: 'admin',
     },
   }).then(function(data) {
-    stub.restore();
+    stub1.restore();
 
     // Si hace un redirect a /auth/success es que todo ha ido bien
     t.is(data.res.statusCode, 201);
@@ -91,27 +85,31 @@ test.cb('with valid credentials can auth and get a token', (t) => {
     let token = data.body.token;
     t.truthy(token);
 
-    // Fail without token
-    // Promise.all([
-    //   _promiseRequest({
-    //     url: _url('/v1/users'),
-    //     json: true,
-    //     method: 'GET',
-    //   }, function(data) {
-    //     // No authenticated
-    //     t.is(data.res.statusCode, 401);
-    //   }),
-    //   _promiseRequest({
-    //     url: _url(`/v1/users?token=${token}`),
-    //     json: true,
-    //     method: 'GET',
-    //   }, function(data) {
-    //     // Authenticated
-    //     t.is(data.res.statusCode, 200);
-    //   }),
-    // ]).then(function() {
+    return Promise.all([
+      // Fail without token
+      _promiseRequest({
+        url: _url('/v1/users'),
+        json: true,
+        method: 'GET',
+      }).then(function(data) {
+        // No authenticated
+        t.is(data.res.statusCode, 401);
+      }),
+      // Pass with token
+      // _promiseRequest({
+      //   url: _url(`/v1/users?token=${token}`),
+      //   json: true,
+      //   method: 'GET',
+      // }).then(function(data) {
+      //   console.log('test With');
+      //   inspect(data.body);
+      //
+      //   // Authenticated
+      //   t.is(data.res.statusCode, 200);
+      // }),
+    ]).then(function() {
       t.end();
-    // });
+    });
   });
 });
 

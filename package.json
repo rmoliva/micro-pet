@@ -16,11 +16,11 @@
     "node": ">= 0.12.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test npm run eslint && npm run ava",
+    "test": "npm run eslint && npm run ava",
     "eslint": "eslint src/. test/.",
     "start": "node src/",
     "start:debug": "DEBUG=feathers-authentication* node src/",
-    "ava": "NODE_ENV=test ava --verbose --serial",
+    "ava": "NODE_ENV=test nyc ava --verbose",
     "debug": "node --inspect --debug-brk src/index.js"
   },
   "dependencies": {
@@ -52,7 +52,9 @@
     "eslint": "^3.11.1",
     "eslint-config-google": "^0.7.1",
     "mocha": "^3.2.0",
+    "nyc": "^10.0.0",
     "request": "^2.79.0",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2"
   }
 }

@@ -8,7 +8,7 @@ const auth = require('feathers-authentication');
 module.exports = function() {
   const app = this;
 
-  let config = app.get('auth');
+  let config = app.get('v1').auth;
 
   // config.google.strategy = GoogleStrategy;
   // config.google.tokenStrategy = GoogleTokenStrategy;
